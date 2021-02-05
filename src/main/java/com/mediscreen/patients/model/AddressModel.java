@@ -12,9 +12,9 @@ public class AddressModel {
     @Column(name = "id")
     private Integer id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @PrimaryKeyJoinColumn(name = "id")
-    private PatientModel patientAddress;
+ //   @OneToOne(fetch = FetchType.LAZY)
+ //   @PrimaryKeyJoinColumn(name = "id")
+ //   private PatientModel patientAddress;
 
     @NotEmpty(message="Street cannot be empty")
     @Column(name="street")
