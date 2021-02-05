@@ -1,5 +1,6 @@
 package com.mediscreen.patients.model;
 
+import com.mediscreen.patients.repository.GenderEnum;
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -36,12 +37,12 @@ public class PatientModel {
     @Type(type="org.jadira.usertype.dateandtime.joda.PersistentInstantAsTimestamp")
     private LocalDate birthdate;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "patientSex")
-    @JoinColumn(name="id", foreignKey = @ForeignKey(name = "patients_ibfk_1"))
-    private SexModel sex;
+    @Enumerated(EnumType.STRING)
+    @Column(length = 25)
+    private GenderEnum gender;
 
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "patientAddress")
-    @JoinColumn(name="id", foreignKey = @ForeignKey(name = "patients_ibfk_2"))
+    @JoinColumn(name="id", foreignKey = @ForeignKey(name = "patients_ibfk_1"))
     private AddressModel address;
 
     @Column(name = "email_address")
@@ -84,12 +85,12 @@ public class PatientModel {
         this.birthdate = birthdate;
     }
 
-    public SexModel getSex() {
-        return sex;
+    public GenderEnum getGender() {
+        return gender;
     }
 
-    public void setSexModel(SexModel sexModel) {
-        this.sex = sex;
+    public void setGender(GenderEnum gender) {
+        this.gender = gender;
     }
 
     public AddressModel getAddress() {
