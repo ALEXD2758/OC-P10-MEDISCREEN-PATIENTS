@@ -1,7 +1,9 @@
 package com.mediscreen.patients.service;
 
+import com.mediscreen.patients.model.AddressModel;
 import com.mediscreen.patients.model.PatientModel;
 import com.mediscreen.patients.repository.PatientRepository;
+import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -11,12 +13,14 @@ import java.util.List;
 @Service
 public class PatientService {
 
-    private Logger logger = LoggerFactory.getLogger(PatientService.class);
+    private final Logger logger = LoggerFactory.getLogger(PatientService.class);
 
-    private PatientRepository patientRep;
+    private final PatientRepository patientRep;
+    private final AddressService addressService;
 
-    public PatientService(PatientRepository patientRep) {
+    public PatientService(PatientRepository patientRep, AddressService addressService) {
         this.patientRep = patientRep;
+        this.addressService = addressService;
     }
 
     /**
@@ -28,22 +32,25 @@ public class PatientService {
         return patientRep.findAll();
     }
 
+    public List<PatientModel> getAllPatientsByAddress(String street) {
+        return patientRep.findAllByAddressStreet(street);
+    }
+
     /**
-     * Check if the combination of given and family name already exists
+     * Check if the combination of given and family name and birthdate already exists
      * @param givenName the given name of the patient
      * @param familyName the family name of the patient
-     * @return true if the combination already exists
-     * @return false if the combination doesn't exist
+     * @param birthdate the birthdate of the patient
+     * @return true if the combination already exists, false if the combination doesn't exist
      */
-    public boolean checkGivenAndFamilyNamesExist(String givenName, String familyName) {
-        return patientRep.existsByGivenNameAndFamilyName(givenName, familyName);
+    public boolean checkGivenAndFamilyNamesAndBirthDateExist(String givenName, String familyName, LocalDate birthdate) {
+        return patientRep.existsByGivenNameAndFamilyNameAndBirthdate(givenName, familyName, birthdate);
     }
 
     /**
      * Check if a patient Id already exists
      * @param id the patient ID
-     * @return true if patient ID already exists
-     * @return false if patient ID doesn't exist
+     * @return true if patient ID already exists, false if patient ID doesn't exist
      */
     public boolean checkIdExists(int id) {
         return patientRep.existsById(id);
@@ -77,10 +84,52 @@ public class PatientService {
     }
 
     /**
-     * Save a new patient in the DB
+     * Set a new AddressModel from data inside the request, to the PatientModel
+     * Save a new patient in the DB after checking if the given, family names and birthdate exist already
+     *
      * @param patient the PatientModel to save
+     * @return boolean, true if the patient was saved, false if not saved
      */
     public void savePatient(PatientModel patient) {
+      //  if (!checkGivenAndFamilyNamesAndBirthDateExist(patient.getGivenName(), patient.getFamilyName(),
+           //     patient.getBirthdate())) {
+
+            AddressModel address;
+                address = new AddressModel();
+            address.setStreet(patient.getAddress().getStreet());
+            address.setCity(patient.getAddress().getCity());
+            address.setPostcode(patient.getAddress().getPostcode());
+            address.setDistrict(patient.getAddress().getDistrict());
+            address.setState(patient.getAddress().getState());
+            address.setCountry(patient.getAddress().getCountry());
+            patient.setAddress(address);
+            patientRep.save(patient);
+         //   return true;
+     //   }
+      //  return false;
+    }
+
+    /**
+     * Set a new AddressModel from data inside the request, to the PatientModel
+     * Save a new patient in the DB
+     *
+     * @param patient the PatientModel to save
+     */
+    public void updatePatient(PatientModel patient) {
+
+         AddressModel address = addressService.getAddressById(patient.getId());
+
+       // address.setId(patient.getAddress().getId());
+        address.setStreet(patient.getAddress().getStreet());
+        address.setCity(patient.getAddress().getCity());
+        address.setPostcode(patient.getAddress().getPostcode());
+        address.setDistrict(patient.getAddress().getDistrict());
+        address.setState(patient.getAddress().getState());
+        address.setCountry(patient.getAddress().getCountry());
+
+        patient.setAddress(address);
+
+
         patientRep.save(patient);
     }
 

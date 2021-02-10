@@ -1,17 +1,20 @@
+// PLUGINS CONFIGURATION
 plugins {
 	id 'org.springframework.boot' version '2.4.2'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
 }
 
+//NAMING, VERSION CONFIGURATION
 group = 'com.mediscreen'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
+//REPOSITORIES CONFIGURATION
 repositories {
 	mavenCentral()
 }
-
+//DEPENDENCIES CONFIGURATION
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 //	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
@@ -23,11 +26,8 @@ dependencies {
 
 	compile group: 'org.hibernate', name: 'hibernate-validator', version: '6.0.13.Final'
 
-
-
 	implementation 'joda-time:joda-time:2.10.9'
 	compile group: 'org.jadira.usertype', name: 'usertype.core', version: '6.0.1.GA'
-
 
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 

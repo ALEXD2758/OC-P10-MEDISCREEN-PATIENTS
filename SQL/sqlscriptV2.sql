@@ -26,8 +26,7 @@ CREATE TABLE IF NOT EXISTS `mediscreen`.`patients` (
   `gender` VARCHAR(25) NOT NULL,
   `email_address` VARCHAR(125),
   `phone_number` VARCHAR(125),
-  PRIMARY KEY (`id`),
-  FOREIGN KEY (`id`) REFERENCES address(`id`)
+  PRIMARY KEY (`id`)
 );
 
 -- -----------------------------------------------------
@@ -35,12 +34,13 @@ CREATE TABLE IF NOT EXISTS `mediscreen`.`patients` (
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `mediscreen`.`address` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `street` VARCHAR(125) NOT NULL,
-  `city` VARCHAR(125) NOT NULL,
-  `postcode` VARCHAR(125) NOT NULL,
+  `street` VARCHAR(125),
+  `city` VARCHAR(125),
+  `postcode` VARCHAR(125) ,
   `district` VARCHAR(125),
   `state` VARCHAR(125),
-  `country` VARCHAR(125) NOT NULL,
-  PRIMARY KEY (`id`)
+  `country` VARCHAR(125),
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`id`) REFERENCES patients(`id`)
 );
 
