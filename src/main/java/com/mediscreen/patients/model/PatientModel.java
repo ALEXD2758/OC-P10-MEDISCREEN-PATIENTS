@@ -1,14 +1,14 @@
 package com.mediscreen.patients.model;
 
+import com.mediscreen.patients.constraint.GenderEnumPattern;
+import com.mediscreen.patients.repository.GenderEnum;
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Past;
-import javax.validation.constraints.Size;
+import javax.validation.Valid;
+import javax.validation.constraints.*;
 
 @Entity
 @Table(name = "patients")
@@ -30,18 +30,23 @@ public class PatientModel {
     private String familyName;
 
     @Past(message = "The date should be a date in the future or now")
-    @NotEmpty(message="Birthdate cannot be empty")
+    @NotNull(message="Birthdate cannot be empty")
     @Column(name = "birth_date")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @Type(type="org.jadira.usertype.dateandtime.joda.PersistentInstantAsTimestamp")
+    @Type(type="org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
     private LocalDate birthdate;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "patientSex")
-    @JoinColumn(name="id", foreignKey = @ForeignKey(name = "patients_ibfk_1"))
-    private SexModel sex;
+    //@NotBlank(message = "Gender is mandatory MALE or FEMALE)")
+ //   @Size(max = 1, message = "Gender is mandatory (MALE or FEMALE)")
+ //   @Pattern(regexp = "^[MALE|FEMALE]{1}$", message = "Must be MALE or FEMALE")
+    @GenderEnumPattern(anyOf = { GenderEnum.MALE, GenderEnum.FEMALE }, message = "Must be male or female")
+    @Enumerated(EnumType.STRING)
+    @Column()
+    private GenderEnum gender;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "patientAddress")
-    @JoinColumn(name="id", foreignKey = @ForeignKey(name = "patients_ibfk_2"))
+    @Valid
+    @OneToOne(fetch = FetchType.EAGER, mappedBy = "patientAddress", cascade = CascadeType.ALL)
+    @JoinColumn(name="id",  foreignKey = @ForeignKey(name = "patients_ibfk_1"))
     private AddressModel address;
 
     @Column(name = "email_address")
@@ -84,12 +89,12 @@ public class PatientModel {
         this.birthdate = birthdate;
     }
 
-    public SexModel getSex() {
-        return sex;
+    public GenderEnum getGender() {
+        return gender;
     }
 
-    public void setSexModel(SexModel sexModel) {
-        this.sex = sex;
+    public void setGender(GenderEnum gender) {
+        this.gender = gender;
     }
 
     public AddressModel getAddress() {

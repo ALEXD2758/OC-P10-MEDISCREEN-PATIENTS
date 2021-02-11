@@ -1,29 +1,33 @@
+// PLUGINS CONFIGURATION
 plugins {
 	id 'org.springframework.boot' version '2.4.2'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
 }
 
+//NAMING, VERSION CONFIGURATION
 group = 'com.mediscreen'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
+//REPOSITORIES CONFIGURATION
 repositories {
 	mavenCentral()
 }
-
+//DEPENDENCIES CONFIGURATION
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+//	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 //	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
+	compile group: 'org.hibernate', name: 'hibernate-validator', version: '6.0.13.Final'
+
 	implementation 'joda-time:joda-time:2.10.9'
-	implementation 'org.jadira.usertype:usertype.core-hibernate36:3.2.0.GA'
+	compile group: 'org.jadira.usertype', name: 'usertype.core', version: '6.0.1.GA'
 
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 

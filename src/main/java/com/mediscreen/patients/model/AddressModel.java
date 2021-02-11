@@ -1,8 +1,10 @@
 package com.mediscreen.patients.model;
 
 import javax.persistence.*;
+import javax.transaction.Transactional;
 import javax.validation.constraints.NotEmpty;
 
+@Transactional
 @Entity
 @Table(name = "address")
 public class AddressModel {
@@ -12,7 +14,7 @@ public class AddressModel {
     @Column(name = "id")
     private Integer id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @PrimaryKeyJoinColumn(name = "id")
     private PatientModel patientAddress;
 
