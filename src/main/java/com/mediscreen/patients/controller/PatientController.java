@@ -79,18 +79,19 @@ public class PatientController {
             }
             else if(patientService.checkGivenAndFamilyNamesAndBirthDateExist(patientToCreate.getGivenName(),
                     patientToCreate.getFamilyName(), patientToCreate.getBirthdate()) == false) {
-                if (addressService.getAllPatientsWithAnAddress(patientToCreate.getAddress().getStreet(),
+                if (addressService.getAllPatientsWithExistentAddress(patientToCreate.getAddress().getStreet(),
                     patientToCreate.getAddress().getCity(), patientToCreate.getAddress().getPostcode(),
                     patientToCreate.getAddress().getCountry()).size() > 0) {
                     List<PatientModel> listPatientsAlreadyAtThatAddress =
-                            patientService.getAllPatientsByAddress(patientToCreate.getAddress().getStreet());
+                            patientService.getAllPatientsByAddress(patientToCreate.getAddress().getStreet(),
+                                    patientToCreate.getAddress().getCity(), patientToCreate.getAddress().getCountry());
                     ra.addFlashAttribute("patientListAtAddress",
                             listPatientsAlreadyAtThatAddress);
                     ra.addFlashAttribute("patientToCreate",
                             patientToCreate);
                     return "redirect:/patient/add/confirmation";
                     }
-                else if (addressService.getAllPatientsWithAnAddress(patientToCreate.getAddress().getStreet(),
+                else if (addressService.getAllPatientsWithExistentAddress(patientToCreate.getAddress().getStreet(),
                         patientToCreate.getAddress().getCity(), patientToCreate.getAddress().getPostcode(),
                         patientToCreate.getAddress().getCountry()).size() == 0) {
                     patientService.savePatient(patientToCreate);

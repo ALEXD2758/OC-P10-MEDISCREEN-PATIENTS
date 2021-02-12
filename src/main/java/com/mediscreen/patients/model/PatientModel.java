@@ -1,6 +1,5 @@
 package com.mediscreen.patients.model;
 
-import com.mediscreen.patients.constraint.GenderEnumPattern;
 import com.mediscreen.patients.repository.GenderEnum;
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDate;
@@ -36,10 +35,6 @@ public class PatientModel {
     @Type(type="org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
     private LocalDate birthdate;
 
-    //@NotBlank(message = "Gender is mandatory MALE or FEMALE)")
- //   @Size(max = 1, message = "Gender is mandatory (MALE or FEMALE)")
- //   @Pattern(regexp = "^[MALE|FEMALE]{1}$", message = "Must be MALE or FEMALE")
-    @GenderEnumPattern(anyOf = { GenderEnum.MALE, GenderEnum.FEMALE }, message = "Must be male or female")
     @Enumerated(EnumType.STRING)
     @Column()
     private GenderEnum gender;
