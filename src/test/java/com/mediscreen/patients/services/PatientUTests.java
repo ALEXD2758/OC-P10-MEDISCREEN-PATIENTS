@@ -6,22 +6,28 @@ import com.mediscreen.patients.repository.AddressRepository;
 import com.mediscreen.patients.repository.GenderEnum;
 import com.mediscreen.patients.repository.PatientRepository;
 import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class PatientUTests {
+
+    @Autowired
+    private DataSource dataSource;
 
     @Autowired
     private PatientRepository patientRepository;
@@ -31,7 +37,6 @@ public class PatientUTests {
 
     public PatientModel patientModel1() {
         AddressModel addressModel1 = new AddressModel();
-        addressModel1.setId(1);
         addressModel1.setStreet("StreetTest1");
         addressModel1.setCity("CityTest1");
         addressModel1.setPostcode("112345");
@@ -39,9 +44,8 @@ public class PatientUTests {
         addressModel1.setState("StateTest1");
         addressModel1.setCountry("CountryTest1");
 
-        LocalDate date = new LocalDate(2020/01/01);
+        LocalDate date = new LocalDate(2020, 01, 01);
         PatientModel patientModel1 = new PatientModel();
-        patientModel1.setId(1);
         patientModel1.setGivenName("John");
         patientModel1.setFamilyName("Boyd");
         patientModel1.setBirthdate(date);
@@ -54,7 +58,6 @@ public class PatientUTests {
 
     public PatientModel patientModel2() {
         AddressModel addressModel2 = new AddressModel();
-        addressModel2.setId(2);
         addressModel2.setStreet("StreetTest2");
         addressModel2.setCity("CityTest2");
         addressModel2.setPostcode("212345");
@@ -62,9 +65,8 @@ public class PatientUTests {
         addressModel2.setState("StateTest2");
         addressModel2.setCountry("CountryTest2");
 
-        LocalDate date = new LocalDate(2019/01/01);
+        LocalDate date = new LocalDate(2014, 01,01);
         PatientModel patientModel2 = new PatientModel();
-        patientModel2.setId(1);
         patientModel2.setGivenName("Roger");
         patientModel2.setFamilyName("Patterson");
         patientModel2.setBirthdate(date);
@@ -76,13 +78,15 @@ public class PatientUTests {
     }
 
     @Before
-    public void savePatientsToDbBeforeTests() {
+    public void savePatientsToDbBeforeTests() throws SQLException {
+        ScriptUtils.executeSqlScript(dataSource.getConnection(), new FileSystemResource("src/test/resources/db_test_scriptV2.sql"));
+        patientRepository.deleteAll();
         patientRepository.save(patientModel1());
         patientRepository.save(patientModel2());
     }
 
-    @AfterAll
-    public void deleteAllPatients() {
+    @After
+    public void deleteAllPatientsAfterTests() {
         patientRepository.deleteAll();
     }
 
@@ -133,19 +137,18 @@ public class PatientUTests {
         //ARRANGE
         String givenName = "Roger";
         String familyName = "Patterson";
-        LocalDate birthdate = new LocalDate(2019/01/01);
+        LocalDate birthdate = new LocalDate(2014, 01,01);
 
         //ACT
         boolean existentPatient = patientRepository.existsByGivenNameAndFamilyNameAndBirthdate(givenName, familyName,
                 birthdate);
 
         //ASSERT
-        Assert.assertEquals("TRUE", existentPatient);
+        Assert.assertEquals(true, existentPatient);
     }
 
     @Test
     public void checkExistentPatientByIdShouldReturnTrue() {
-        //ARRANGE
         //ARRANGE
         int id = 1;
 
@@ -153,7 +156,7 @@ public class PatientUTests {
         boolean existentPatientById = patientRepository.existsById(id);
 
         //ASSERT
-        Assert.assertEquals("TRUE", existentPatientById);
+        Assert.assertEquals(true, existentPatientById);
     }
 
     @Test
@@ -182,9 +185,8 @@ public class PatientUTests {
         addressModel3.setState("StateTest3");
         addressModel3.setCountry("CountryTest3");
 
-        LocalDate date = new LocalDate(2018/01/01);
+        LocalDate date = new LocalDate(2018,01,01);
         PatientModel patientModel3 = new PatientModel();
-        patientModel3.setId(3);
         patientModel3.setGivenName("Test");
         patientModel3.setFamilyName("TestName");
         patientModel3.setBirthdate(date);
@@ -204,7 +206,8 @@ public class PatientUTests {
         patientModel3.setAddress(address);
 
         //ACT
-        PatientModel patientToSave = patientRepository.save(patientModel3);
+        PatientModel patientToSave = patientRepository.saveAndFlush(patientModel3);
+        patientRepository.flush();
 
         //ASSERT
         Assert.assertNotNull(patientToSave.getId());
@@ -216,7 +219,7 @@ public class PatientUTests {
     @Test
     public void updatePatientShouldUpdatePatient() {
         //ARRANGE
-        AddressModel addressToUpdate = addressRepository.findById(3);
+        AddressModel addressToUpdate = addressRepository.findById(2);
         addressToUpdate.setStreet("Street4");
         addressToUpdate.setCity("CityTest4");
         addressToUpdate.setPostcode("1234");
@@ -225,7 +228,7 @@ public class PatientUTests {
         addressToUpdate.setCountry("Country4");
 
         //ACT
-        PatientModel patientModel3 = patientRepository.findById(3);
+        PatientModel patientModel3 = patientRepository.findById(2);
         patientModel3.setAddress(addressToUpdate);
         patientModel3.setFamilyName("UpdatedName");
         PatientModel patientToUpdate = patientRepository.save(patientModel3);

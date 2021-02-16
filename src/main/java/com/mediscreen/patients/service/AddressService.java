@@ -2,7 +2,6 @@ package com.mediscreen.patients.service;
 
 import com.mediscreen.patients.model.AddressModel;
 import com.mediscreen.patients.repository.AddressRepository;
-import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -41,18 +40,4 @@ public class AddressService {
                                                            String country) {
         return addressRep.findAllByStreetAndCityAndPostcodeAndCountry(street, city, postcode, country);
     }
-
-    /**
-     * Check if the combination of the address already exists
-     * @param street
-     * @param city
-     * @param postcode
-     * @param country
-     * @return true if the combination already exists, false if the combination doesn't exist
-     */
-    /*
-    public boolean checkAddressCombinationExist(String street, String city, String postcode, String country) {
-        return addressRep.existsByStreetAndCityAndPostcodeAndCountry(street, city, postcode, country);
-    }
-    */
 }

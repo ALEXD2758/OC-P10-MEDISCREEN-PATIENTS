@@ -5,20 +5,20 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
 -- -----------------------------------------------------
--- Schema sexmediscreen
+-- Schema mediscreen_test
 -- -----------------------------------------------------
-DROP SCHEMA IF EXISTS `mediscreen` ;
+DROP SCHEMA IF EXISTS `mediscreen_test` ;
 
 -- -----------------------------------------------------
 -- Schema mediscreen
 -- -----------------------------------------------------
-CREATE SCHEMA `mediscreen` DEFAULT CHARACTER SET utf8 ;
-USE `mediscreen` ;
+CREATE SCHEMA `mediscreen_test` DEFAULT CHARACTER SET utf8 ;
+USE `mediscreen_test` ;
 
 -- -----------------------------------------------------
--- Table `mediscreen`.`patients`
+-- Table `mediscreen_test`.`patients`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mediscreen`.`patients` (
+CREATE TABLE IF NOT EXISTS `mediscreen_test`.`patients` (
   `id` int NOT NULL AUTO_INCREMENT,
   `given_name` VARCHAR(125) NOT NULL,
   `family_name` VARCHAR(125) NOT NULL,
@@ -30,9 +30,9 @@ CREATE TABLE IF NOT EXISTS `mediscreen`.`patients` (
 );
 
 -- -----------------------------------------------------
--- Table `mediscreen`.`address`
+-- Table `mediscreen_test`.`address`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mediscreen`.`address` (
+CREATE TABLE IF NOT EXISTS `mediscreen_test`.`address` (
   `id` int NOT NULL AUTO_INCREMENT,
   `street` VARCHAR(125),
   `city` VARCHAR(125),

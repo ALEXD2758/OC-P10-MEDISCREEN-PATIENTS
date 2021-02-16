@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -50,7 +49,7 @@ public class PatientController {
      * with attribute
      */
     @GetMapping("/patient/add")
-    public String addPatient(Model model) {
+    public String patientAdd(Model model) {
         model.addAttribute("patient", new PatientModel());
         logger.info("GET /patient/add : OK");
         return "patient/add";
@@ -60,7 +59,7 @@ public class PatientController {
      * HTML POST request to add a new patient if it doesn't exist
      * Add redirect attributes messages: errorSaveMessage if the patient already exist
      *                                   successSaveMessage if the patient is new
-     *
+     *g
      * @param patientToCreate the PatientModel with annotation @Valid (for the possible constraints)
      * @param result to represent binding results
      * @param ra the RedirectAttributes to redirect attributes in redirect
@@ -68,14 +67,14 @@ public class PatientController {
      * with attributes
      */
     @PostMapping("/patient/add/validate")
-    public String addValidatePatient(@Valid @ModelAttribute("patientToCreate") PatientModel patientToCreate, BindingResult result
-            , RedirectAttributes ra) {
+    public String patientAddValidate(@Valid @ModelAttribute("patientToCreate") PatientModel patientToCreate,
+                                     BindingResult result, RedirectAttributes ra) {
         if (!result.hasErrors()) {
             if (patientService.checkGivenAndFamilyNamesAndBirthDateExist(patientToCreate.getGivenName(),
                     patientToCreate.getFamilyName(), patientToCreate.getBirthdate()) == true) {
                 logger.info("/patient/add/validate : Patient already exist");
                 ra.addFlashAttribute("ErrorPatientExistentMessage", "Patient already exist");
-                return "patient/add";
+                return "redirect:/patient/add";
             }
             else if(patientService.checkGivenAndFamilyNamesAndBirthDateExist(patientToCreate.getGivenName(),
                     patientToCreate.getFamilyName(), patientToCreate.getBirthdate()) == false) {
@@ -111,7 +110,7 @@ public class PatientController {
      * with attribute
      */
     @GetMapping("/patient/add/confirmation")
-    public String addConfirmationPatient() {
+    public String patientAddConfirmation() {
         logger.info("GET /patient/add/confirmation : OK");
         return "patient/confirmationAdd";
     }
@@ -127,16 +126,16 @@ public class PatientController {
      * with attributes
      */
     @PostMapping("/patient/add/confirmation/validate")
-    public String addConfirmationValidatePatient(@Valid PatientModel patientToCreate, BindingResult result,
+    public String patientAddConfirmationValidate(@Valid PatientModel patientToCreate, BindingResult result,
             RedirectAttributes ra) {
         if (!result.hasErrors()) {
             patientService.savePatient(patientToCreate);
             ra.addFlashAttribute("successSaveMessage", "Patient was successfully added");
             return "redirect:/patient/list";
         }
-            if (result.hasErrors()) {
+        if (result.hasErrors()) {
                 logger.info("/patient/add/confirmation/validate : NOK - Request went wrong");
-            }
+        }
         return "redirect:/patient/list";
     }
 
@@ -151,19 +150,20 @@ public class PatientController {
      * with attribute (if no Exception)
      */
     @GetMapping("/patient/update/{id}")
-    public String getUpdatePatientForm(@PathVariable("id") Integer id, Model model, RedirectAttributes ra) {
+    public String patientUpdate(@PathVariable("id") Integer id, Model model, RedirectAttributes ra) {
         try {
             if (patientService.checkIdExists(id) == false) {
                 ra.addFlashAttribute("ErrorPatientIdMessage", "Patient ID doesn't exist");
                 logger.info("GET /patient/update : Non existent id");
                 return "redirect:/patient/list";
             }
-            model.addAttribute("patient", patientService.getPatientById(id));
-            logger.info("GET /patient/update : OK");
         } catch (Exception e) {
             ra.addFlashAttribute("InvalidPatientIdMessage", "Invalid patient ID");
-            logger.info("/patient/delete : NOK " + "Invalid patient ID " + id);
+            logger.info("/patient/update : NOK " + "Invalid patient ID " + id);
+            return "redirect:/patient/list";
         }
+        model.addAttribute("patient", patientService.getPatientById(id));
+        logger.info("GET /patient/update : OK");
         return "patient/update";
     }
 
@@ -179,7 +179,7 @@ public class PatientController {
      * with attributes
      */
     @PostMapping("/patient/update/{id}")
-    public String postUpdatePatient(@PathVariable("id") Integer id,
+    public String patientPostUpdate(@PathVariable("id") Integer id,
                                   @Valid @ModelAttribute("patient") PatientModel patient,
                             BindingResult result, RedirectAttributes ra) {
         if (patientService.checkIdExists(id) == false) {
@@ -209,7 +209,7 @@ public class PatientController {
      * with attributes
      */
     @GetMapping("/patient/delete/{id}")
-    public String deletePatient(@PathVariable("id") Integer id, Model model, RedirectAttributes ra) {
+    public String patientDelete(@PathVariable("id") Integer id, Model model, RedirectAttributes ra) {
         try {
             if (patientService.checkIdExists(id) == false) {
                 ra.addFlashAttribute("ErrorPatientIdMessage", "Patient ID doesn't exist");
