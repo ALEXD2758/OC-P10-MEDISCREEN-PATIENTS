@@ -3,6 +3,9 @@ plugins {
 	id 'org.springframework.boot' version '2.4.2'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
+	id 'idea'
+	id 'eclipse'
+	id 'jacoco'
 }
 
 //NAMING, VERSION CONFIGURATION
@@ -23,6 +26,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation 'junit:junit:4.12'
+	compile group: 'io.projectreactor', name: 'reactor-core', version: '3.4.2'
 
 	compile group: 'org.hibernate', name: 'hibernate-validator', version: '6.0.13.Final'
 
@@ -33,10 +38,37 @@ dependencies {
 
 	runtimeOnly 'mysql:mysql-connector-java'
 
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'io.projectreactor:reactor-test'
+	testCompile 'joda-time:joda-time:2.10.9'
+	testCompile group: 'org.jadira.usertype', name: 'usertype.core', version: '6.0.1.GA'
+	testCompile('mysql:mysql-connector-java')
+	testCompile("junit:junit")
+	testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.1.6.RELEASE'
 }
 
-test {
-	useJUnitPlatform()
+
+jacoco {
+	toolVersion = "0.8.4"
+}
+
+jacocoTestReport {
+	reports {
+		xml.enabled true
+		csv.enabled false
+		html.destination file("${buildDir}/jacocoHtml")
+	}
+}
+
+test.finalizedBy jacocoTestReport
+check.dependsOn jacocoTestCoverageVerification
+
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			limit {
+		//		counter = 'LINE'
+		//		value = 'COVEREDRATIO'
+		//		minimum = 0.5
+			}
+		}
+	}
 }

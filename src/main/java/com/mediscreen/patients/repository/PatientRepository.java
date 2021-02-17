@@ -7,12 +7,10 @@ import com.mediscreen.patients.model.PatientModel;
 import java.util.List;
 
 public interface PatientRepository extends JpaRepository<PatientModel, Integer> {
-
-    List<PatientModel> findByFamilyName(String familyName);
-    List<PatientModel> findByGivenName(String givenName);
-
     List<PatientModel> findAll();
-    List<PatientModel> findAllByAddressStreet(String street);
+
+    List<PatientModel> findAllByAddressStreetAndAddressCityAndAddressCountry(String street, String city,
+                                                                             String country);
 
     PatientModel findById(int id);
 
