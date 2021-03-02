@@ -5,6 +5,8 @@ import com.mediscreen.patients.model.PatientModel;
 import com.mediscreen.patients.repository.AddressRepository;
 import com.mediscreen.patients.repository.GenderEnum;
 import com.mediscreen.patients.repository.PatientRepository;
+import com.mediscreen.patients.service.AddressService;
+import com.mediscreen.patients.service.PatientService;
 import org.joda.time.LocalDate;
 import org.junit.After;
 import org.junit.Assert;
@@ -28,6 +30,12 @@ public class PatientUTests {
 
     @Autowired
     private DataSource dataSource;
+
+    @Autowired
+    private PatientService patientService;
+
+    @Autowired
+    private AddressService addressService;
 
     @Autowired
     private PatientRepository patientRepository;
@@ -81,8 +89,8 @@ public class PatientUTests {
     public void savePatientsToDbBeforeTests() throws SQLException {
         ScriptUtils.executeSqlScript(dataSource.getConnection(), new FileSystemResource("src/test/resources/db_test_scriptV2.sql"));
         patientRepository.deleteAll();
-        patientRepository.save(patientModel1());
-        patientRepository.save(patientModel2());
+        patientService.savePatient(patientModel1());
+        patientService.savePatient(patientModel2());
     }
 
     @After
@@ -94,7 +102,7 @@ public class PatientUTests {
     public void getAllPatientsShouldReturnAllPatients() {
         //ARRANGE
         //ACT
-        List<PatientModel> listPatient = patientRepository.findAll();
+        List<PatientModel> listPatient = patientService.getAllPatients();
         //ASSERT
         Assert.assertTrue(listPatient.size() == 2);
         Assert.assertTrue(listPatient.get(0).getGivenName().equals("John"));
@@ -110,7 +118,7 @@ public class PatientUTests {
 
         //ACT
         List<PatientModel> listPatient =
-                patientRepository.findAllByAddressStreetAndAddressCityAndAddressCountry(street, city, country);
+                patientService.getAllPatientsByAddress(street, city, country);
 
         //ASSERT
         Assert.assertTrue(listPatient.size() == 1);
@@ -124,7 +132,7 @@ public class PatientUTests {
         int id = 1;
 
         //ACT
-        PatientModel patient = patientRepository.findById(id);
+        PatientModel patient = patientService.getPatientById(id);
 
         //ASSERT
         Assert.assertTrue(patient.getGivenName().equals("John"));
@@ -140,7 +148,7 @@ public class PatientUTests {
         LocalDate birthdate = new LocalDate(2014, 01,01);
 
         //ACT
-        boolean existentPatient = patientRepository.existsByGivenNameAndFamilyNameAndBirthdate(givenName, familyName,
+        boolean existentPatient = patientService.checkGivenAndFamilyNamesAndBirthDateExist(givenName, familyName,
                 birthdate);
 
         //ASSERT
@@ -153,7 +161,7 @@ public class PatientUTests {
         int id = 1;
 
         //ACT
-        boolean existentPatientById = patientRepository.existsById(id);
+        boolean existentPatientById = patientService.checkIdExists(id);
 
         //ASSERT
         Assert.assertEquals(true, existentPatientById);
@@ -165,9 +173,9 @@ public class PatientUTests {
         int id = 1;
 
         //ACT
-        boolean existentPatientById = patientRepository.existsById(id);
-        patientRepository.deleteById(id);
-        Optional<PatientModel> optionalPatientModel = Optional.ofNullable(patientRepository.findById(id));
+        boolean existentPatientById = patientService.checkIdExists(id);
+        patientService.deletePatientById(id);
+        Optional<PatientModel> optionalPatientModel = Optional.ofNullable(patientService.getPatientById(id));
 
         //ASSERT
         Assert.assertFalse(optionalPatientModel.isPresent());
@@ -206,8 +214,7 @@ public class PatientUTests {
         patientModel3.setAddress(address);
 
         //ACT
-        PatientModel patientToSave = patientRepository.saveAndFlush(patientModel3);
-        patientRepository.flush();
+        PatientModel patientToSave = patientService.savePatient(patientModel3);
 
         //ASSERT
         Assert.assertNotNull(patientToSave.getId());
@@ -219,52 +226,23 @@ public class PatientUTests {
     @Test
     public void updatePatientShouldUpdatePatient() {
         //ARRANGE
-        AddressModel addressToUpdate = addressRepository.findById(2);
-        addressToUpdate.setStreet("Street4");
-        addressToUpdate.setCity("CityTest4");
-        addressToUpdate.setPostcode("1234");
-        addressToUpdate.setDistrict("District4");
-        addressToUpdate.setState("State4");
-        addressToUpdate.setCountry("Country4");
+  //      AddressModel addressToUpdate = addressRepository.findById(1);
+
 
         //ACT
-        PatientModel patientModel3 = patientRepository.findById(2);
-        patientModel3.setAddress(addressToUpdate);
+        PatientModel patientModel3 = patientService.getPatientById(1);
+        patientModel3.getAddress().setStreet("Street4");
+        patientModel3.getAddress().setCity("CityTest4");
+        patientModel3.getAddress().setPostcode("1234");
+        patientModel3.getAddress().setDistrict("District4");
+        patientModel3.getAddress().setState("State4");
+        patientModel3.getAddress().setCountry("Country4");
         patientModel3.setFamilyName("UpdatedName");
-        PatientModel patientToUpdate = patientRepository.save(patientModel3);
+        PatientModel patientToUpdate = patientService.updatePatient(patientModel3);
 
         //ASSERT
         Assert.assertEquals("CityTest4", patientToUpdate.getAddress().getCity());
         Assert.assertEquals("UpdatedName", patientToUpdate.getFamilyName());
         Assert.assertEquals("1234", patientToUpdate.getAddress().getPostcode());
     }
-
- //   @Test
- //   public void saveUpdateFindDeleteBidShouldPerformTheirActionsAndSucceed() {
-/*
-        // Save
-        bid = bidListRepository.save(bid);
-        Assert.assertNotNull(bid.getBidListId());
-        Assert.assertEquals(bid.getBidQuantity(), 10d, 10d);
-
-        // Update
-        bid.setBidQuantity(20d);
-        bid = bidListRepository.save(bid);
-        Assert.assertEquals(bid.getBidQuantity(), 20d, 20d);
-
-        // Find
-        List<BidListModel> listResult = bidListRepository.findAll();
-        Assert.assertTrue(listResult.size() > 0);
-
-        BidListModel bidModel = bidListRepository.findByBidListId(bid.getBidListId());
-        Assert.assertEquals(bidModel.getAccount(), "Account Test", "Account Test");
-
-        // Delete
-        int id = bid.getBidListId();
-        bidListRepository.delete(bid);
-        Optional<BidListModel> BidListModel = bidListRepository.findById(id);
-        Assert.assertFalse(BidListModel.isPresent());
-
- */
-  //  }
 }

@@ -71,9 +71,9 @@ public class PatientService {
      * Save a new patient in the DB after checking if the given, family names and birthdate exist already
      *
      * @param patient the PatientModel to save
-     * @return boolean, true if the patient was saved, false if not saved
+     * @return patient saved
      */
-    public void savePatient(PatientModel patient) {
+    public PatientModel savePatient(PatientModel patient) {
         AddressModel address;
         address = new AddressModel();
         address.setStreet(patient.getAddress().getStreet());
@@ -82,8 +82,12 @@ public class PatientService {
         address.setDistrict(patient.getAddress().getDistrict());
         address.setState(patient.getAddress().getState());
         address.setCountry(patient.getAddress().getCountry());
+
         patient.setAddress(address);
+
         patientRep.save(patient);
+
+        return patient;
     }
 
     /**
@@ -91,8 +95,9 @@ public class PatientService {
      * Save a new patient in the DB
      *
      * @param patient the PatientModel to save
+     * @return patient updated
      */
-    public void updatePatient(PatientModel patient) {
+    public PatientModel updatePatient(PatientModel patient) {
         AddressModel address = addressService.getAddressById(patient.getId());
 
         address.setStreet(patient.getAddress().getStreet());
@@ -105,6 +110,7 @@ public class PatientService {
         patient.setAddress(address);
 
         patientRep.save(patient);
+        return patient;
     }
 
     /**

@@ -5,8 +5,13 @@ import com.mediscreen.patients.model.PatientModel;
 import com.mediscreen.patients.repository.AddressRepository;
 import com.mediscreen.patients.repository.GenderEnum;
 import com.mediscreen.patients.repository.PatientRepository;
+import com.mediscreen.patients.service.AddressService;
+import com.mediscreen.patients.service.PatientService;
 import org.joda.time.LocalDate;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,13 +19,9 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.List;
-
-//import org.junit.jupiter.api.AfterAll;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -30,10 +31,13 @@ public class AddressUTests {
     private DataSource dataSource;
 
     @Autowired
+    private PatientService patientService;
+
+    @Autowired
     private PatientRepository patientRepository;
 
     @Autowired
-    private AddressRepository addressRepository;
+    private AddressService addressService;
 
     public PatientModel patientModel4() {
         AddressModel addressModel4 = new AddressModel();
@@ -108,9 +112,9 @@ public class AddressUTests {
     public void savePatientsToDbBeforeTests() throws SQLException {
         ScriptUtils.executeSqlScript(dataSource.getConnection(), new FileSystemResource("src/test/resources/db_test_scriptV2.sql"));
         patientRepository.deleteAll();
-        patientRepository.save(patientModel4());
-        patientRepository.save(patientModel5());
-        patientRepository.save(patientModel6());
+        patientService.savePatient(patientModel4());
+        patientService.savePatient(patientModel5());
+        patientService.savePatient(patientModel6());
     }
 
     @After
@@ -124,7 +128,7 @@ public class AddressUTests {
         int id = 1;
 
         //ACT
-        AddressModel address = addressRepository.findById(id);
+        AddressModel address = addressService.getAddressById(id);
 
         //ASSERT
         Assert.assertTrue(address.getStreet().equals("StreetTest1"));
@@ -142,7 +146,7 @@ public class AddressUTests {
 
         //ACT
         List<AddressModel> listAddresses =
-                addressRepository.findAllByStreetAndCityAndPostcodeAndCountry(street, city, postcode, country);
+                addressService.getAllPatientsWithExistentAddress(street, city, postcode, country);
 
         //ASSERT
         Assert.assertTrue(listAddresses.size() == 2);

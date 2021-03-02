@@ -1,11 +1,8 @@
 package com.mediscreen.patients.controllers;
 
-
 import com.mediscreen.patients.model.AddressModel;
 import com.mediscreen.patients.model.PatientModel;
-import com.mediscreen.patients.repository.AddressRepository;
 import com.mediscreen.patients.repository.GenderEnum;
-import com.mediscreen.patients.repository.PatientRepository;
 import com.mediscreen.patients.service.AddressService;
 import com.mediscreen.patients.service.PatientService;
 import org.joda.time.LocalDate;
@@ -22,7 +19,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -100,17 +96,6 @@ public class PatientControllerITTest {
         patientModel2.setPhoneNumber("004678925899");
         return patientModel2;
     }
-
- //   @Before
- //   public void savePatientsToDbBeforeTests() throws SQLException {
- //       ScriptUtils.executeSqlScript(dataSource.getConnection(), new FileSystemResource("src/test/resources" +
- //                                                                                                "/db_test_scriptV2" +
- //        ".sql"));
- //       patientRepository.deleteAll();
- //       patientRepository.save(patientModel1());
- //       patientRepository.save(patientModel2());
- //   }
-
 
     @Test
     public void getRequestPatientListViewShouldReturnSuccess() throws Exception {
@@ -245,7 +230,7 @@ public class PatientControllerITTest {
                         patientModel1().getAddress().getCity(), patientModel1().getAddress().getPostcode(),
                         patientModel1().getAddress().getCountry());
 
-        doNothing()
+        doReturn(patientModel1())
                 .when(patientService)
                 .savePatient(patientModel1());
 
@@ -292,7 +277,7 @@ public class PatientControllerITTest {
         patientList.add(patientModel1());
 
         //2. Act
-        doNothing()
+        doReturn(patientModel1())
                 .when(patientService)
                 .savePatient(patientModel1());
 
@@ -312,7 +297,7 @@ public class PatientControllerITTest {
                 .param("emailAddress", "EmailTest1@email.com")
                 .param("phoneNumber", "004678925899"))
 
-                //3. Assert
+        //3. Assert
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/patient/list"))
                 .andExpect(flash().attributeExists("successSaveMessage"))
@@ -372,14 +357,13 @@ public class PatientControllerITTest {
         patientList.add(patientModel1());
 
         //2. Act
-    //I don't know if these 3 next lines should be deleted or not
         doThrow(Exception.class)
                 .when(patientService)
                 .checkIdExists(1);
 
         mockMvc.perform(get("/patient/update/{id}", "5")
                 .flashAttr("InvalidPatientIdMessage", "Invalid patient ID"))
-                //3. Assert
+        //3. Assert
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/patient/list"))
                 .andExpect(flash().attributeExists("InvalidPatientIdMessage"))
@@ -423,7 +407,8 @@ public class PatientControllerITTest {
         doReturn(true)
                 .when(patientService)
                 .checkIdExists(1);
-        doNothing()
+
+        doReturn(patientModel1())
                 .when(patientService)
                 .updatePatient(patientModel1());
 
@@ -508,7 +493,7 @@ public class PatientControllerITTest {
         //2. Act
         mockMvc.perform(get("/patient/delete/{id}", "25")
                 .flashAttr("ErrorPatientIdMessage", "Patient ID doesn't exist"))
-                //3. Assert
+        //3. Assert
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/patient/list"))
                 .andExpect(flash().attributeExists("ErrorPatientIdMessage"))

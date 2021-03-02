@@ -27,6 +27,40 @@ public class PatientController {
     AddressService addressService;
 
     /**
+     * HTTP GET Request to get a JSON string of all patients present in DB for other services
+     *
+     * @return a JSON string of patients
+     */
+    @GetMapping("/getPatientList")
+    public @ResponseBody List<PatientModel> patientList() {
+        logger.info("GET /getPatientList : OK");
+        return patientService.getAllPatients();
+    }
+
+    /**
+     * HTTP GET Request to get a JSON string of a single patient
+     *
+     * @param patientId Integer of the patient ID
+     * @return a JSON string of a PatientModel
+     */
+    @GetMapping("/getPatient")
+    public @ResponseBody PatientModel getPatient(Integer patientId) {
+        logger.info("GET /getPatient : OK");
+        return patientService.getPatientById(patientId);
+    }
+
+    /**
+     * HTTP GET request for checking if a patient ID exists or not
+     *
+     * @return true if patient Id exists, false if not
+     */
+    @GetMapping("/checkPatientId")
+    public @ResponseBody boolean checkPatientId(Integer patientId) {
+        logger.info("GET /checkPatientId : OK");
+        return patientService.checkIdExists(patientId);
+    }
+
+    /**
      * Get the ModelAndView patient/list
      * Adds attribute "patients" to the model, containing all patients available in DB
      *
@@ -102,7 +136,6 @@ public class PatientController {
         }
         return "redirect:/patient/list";
     }
-    // --------------------------------------------------------------------------------------------------------------
     /**
      * HTTP GET request to get the patient add.html page with the attribute patient
      *
@@ -151,17 +184,12 @@ public class PatientController {
      */
     @GetMapping("/patient/update/{id}")
     public String patientUpdate(@PathVariable("id") Integer id, Model model, RedirectAttributes ra) {
-        try {
-            if (patientService.checkIdExists(id) == false) {
-                ra.addFlashAttribute("ErrorPatientIdMessage", "Patient ID doesn't exist");
-                logger.info("GET /patient/update : Non existent id");
-                return "redirect:/patient/list";
-            }
-        } catch (Exception e) {
-            ra.addFlashAttribute("InvalidPatientIdMessage", "Invalid patient ID");
-            logger.info("/patient/update : NOK " + "Invalid patient ID " + id);
+        if (patientService.checkIdExists(id) == false) {
+            ra.addFlashAttribute("ErrorPatientIdMessage", "Patient ID doesn't exist");
+            logger.info("GET /patient/update : Non existent id");
             return "redirect:/patient/list";
         }
+
         model.addAttribute("patient", patientService.getPatientById(id));
         logger.info("GET /patient/update : OK");
         return "patient/update";

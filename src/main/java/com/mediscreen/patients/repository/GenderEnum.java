@@ -1,10 +1,5 @@
 package com.mediscreen.patients.repository;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-
 public enum GenderEnum {
     //Define here the different genders here
 
