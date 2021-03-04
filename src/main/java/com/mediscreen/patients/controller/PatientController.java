@@ -61,7 +61,7 @@ public class PatientController {
     }
 
     /**
-     * Get the ModelAndView patient/list
+     * HTTP GET request the ModelAndView patient/list
      * Adds attribute "patients" to the model, containing all patients available in DB
      *
      * @param model Model Interface, to add attributes to it
@@ -76,7 +76,7 @@ public class PatientController {
     }
 
     /**
-     * HTTP GET request to get the patient add.html page with the attribute patient
+     * HTTP GET request to get the patient add view with the attribute patientToCreate
      *
      * @param model Model Interface, to add attributes to it
      * @returna string to the address "patient/add", returning the associated view
@@ -84,7 +84,7 @@ public class PatientController {
      */
     @GetMapping("/patient/add")
     public String patientAdd(Model model) {
-        model.addAttribute("patient", new PatientModel());
+        model.addAttribute("patientToCreate", new PatientModel());
         logger.info("GET /patient/add : OK");
         return "patient/add";
     }
@@ -93,12 +93,17 @@ public class PatientController {
      * HTML POST request to add a new patient if it doesn't exist
      * Add redirect attributes messages: errorSaveMessage if the patient already exist
      *                                   successSaveMessage if the patient is new
+     * Check if a Patient Already Exist.
+     * -> if true, then redirect to patient/add with ErrorPatientExistentMessage
+     * -> if false, then check if patients at that address already exist
+     *      -> if true, then get the view  patient/add/confirmation with patients already at that address
+     *      -> if false, then save patient and redirect to patient/list view
      *g
      * @param patientToCreate the PatientModel with annotation @Valid (for the possible constraints)
      * @param result to represent binding results
      * @param ra the RedirectAttributes to redirect attributes in redirect
-     * @return a string to the address "patient/add" or patient/list, returning the associated view,
-     * with attributes
+     * @return a string to the address "patient/add" or "patient/list" or "patient/add/confirmation",
+     * returning the associated view, with attributes
      */
     @PostMapping("/patient/add/validate")
     public String patientAddValidate(@Valid @ModelAttribute("patientToCreate") PatientModel patientToCreate,
@@ -134,13 +139,12 @@ public class PatientController {
                 }
             }
         }
-        return "redirect:/patient/list";
+        return "patient/add";
     }
     /**
-     * HTTP GET request to get the patient add.html page with the attribute patient
+     * HTTP GET request to get the "patient/confirmationAdd" view
      *
-     * @returna string to the address "patient/add", returning the associated view
-     * with attribute
+     * @returna string to the address "patient/confirmationAdd", returning the associated view with attribute
      */
     @GetMapping("/patient/add/confirmation")
     public String patientAddConfirmation() {
@@ -149,14 +153,13 @@ public class PatientController {
     }
 
     /**
-     * HTML POST request to add a new patient if it doesn't exist
+     * HTML POST request to add a new patient if it doesn't exist and has no errors
      * Add redirect attributes messages: errorSaveMessage if the patient already exist
      *                                   successSaveMessage if the patient is new
      *
      * @param patientToCreate the PatientModel with annotation @Valid (for the possible constraints)
      * @param ra the RedirectAttributes to redirect attributes in redirect
-     * @return a string to the address "patient/add" or patient/list, returning the associated view,
-     * with attributes
+     * @return a string to the address "patient/add" or "patient/list", returning the associated view, with attributes
      */
     @PostMapping("/patient/add/confirmation/validate")
     public String patientAddConfirmationValidate(@Valid PatientModel patientToCreate, BindingResult result,
@@ -167,13 +170,13 @@ public class PatientController {
             return "redirect:/patient/list";
         }
         if (result.hasErrors()) {
-                logger.info("/patient/add/confirmation/validate : NOK - Request went wrong");
+                logger.info("POST /patient/add/confirmation/validate : NOK - Request went wrong");
         }
         return "redirect:/patient/list";
     }
 
     /**
-     * Get the view patient/update with the chosen patient in a model attribute
+     * HTML GET request to get the view patient/update with the chosen patient in a model attribute
      * with the associated data of the chosen ID
      * Add attribute patient to the model
      *
@@ -196,7 +199,7 @@ public class PatientController {
     }
 
     /**
-     * Update existing patient to the table patients if BindingResult has no errors
+     * HTTP POST request to update existing patient to the table patients if BindingResult has no errors
      * Add Flash Attribute with success message
      * Add attribute patient to the model, containing all patients available in DB
      *
@@ -222,11 +225,11 @@ public class PatientController {
             return "redirect:/patient/list";
         }
         logger.info("POST /patient/update : NOK");
-        return "/patient/add";
+        return "patient/update";
     }
 
     /**
-     * Delete existing patient from the table patients
+     * HTTP GET request to delete existing patient from the table patients
      * Add Flash Attribute with success message
      * Add attribute patient to the model, containing all Bids available in DB
      *

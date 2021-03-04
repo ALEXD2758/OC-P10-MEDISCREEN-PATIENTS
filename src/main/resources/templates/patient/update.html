@@ -8,8 +8,6 @@
 </head>
 <body>
 <div class="container">
-	<p class="alert alert-danger" th:if="${!#strings.isEmpty(InvalidPatientIdMessage)}" th:text="${InvalidPatientIdMessage}"></p>
-
 	<div class="row">
 		<h2>Update Patient : <span th:text="*{patient.givenName}"></span><span> </span><span th:text="*{patient.familyName}"></span></h2>
 	</div>
@@ -19,21 +17,21 @@
 			<div class="form-group">
 				<label for="givenName" class="col-sm-2 control-label">Given Name</label>
 				<div class="col-sm-10">
-					<input type="text" th:field="*{patient.givenName}" id="givenName" placeholder="Given Name" class="col-4">
+					<input type="text" readonly="true" th:field="*{patient.givenName}" id="givenName" placeholder="Given Name" class="col-4">
 					<p class="text-danger" th:if="${#fields.hasErrors('patient.givenName')}" th:errors="*{patient.givenName}"></p>
 				</div>
 			</div>
 			<div class="form-group">
 				<label for="familyName" class="col-sm-2 control-label">Family Name</label>
 				<div class="col-sm-10">
-					<input type="text" th:field="*{patient.familyName}" id="familyName" placeholder="Family Name" class="col-4">
+					<input type="text" readonly="true" th:field="*{patient.familyName}" id="familyName" placeholder="Family Name" class="col-4">
 					<p class="text-danger" th:if="${#fields.hasErrors('patient.familyName')}" th:errors="*{patient.familyName}"></p>
 				</div>
 			</div>
 			<div class="form-group">
 				<label for="birthdate" class="col-sm-2 control-label">Birthdate</label>
 				<div class="col-sm-10">
-					<input type="date" th:field="*{patient.birthdate}" id="birthdate" placeholder="birthdate" class="col-4">
+					<input type="date" readonly="true" th:field="*{patient.birthdate}" id="birthdate" placeholder="birthdate" class="col-4">
 					<p class="text-danger" th:if="${#fields.hasErrors('patient.birthdate')}" th:errors="*{patient.birthdate}"></p>
 				</div>
 			</div>

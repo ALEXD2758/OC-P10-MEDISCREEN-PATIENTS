@@ -127,7 +127,7 @@ public class PatientControllerITTest {
         //3. Assert
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(view().name("patient/add"))
-                .andExpect(model().attributeExists("patient"))
+                .andExpect(model().attributeExists("patientToCreate"))
                 .andReturn();
     }
 

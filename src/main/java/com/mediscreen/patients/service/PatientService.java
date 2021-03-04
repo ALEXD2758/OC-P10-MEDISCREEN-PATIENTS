@@ -32,6 +32,11 @@ public class PatientService {
         return patientRep.findAll();
     }
 
+    /**
+     * Get a list of all patients By Address (combination of street + city + country)
+     *
+     * @return list of PatientModel containing all patient models with that address
+     */
     public List<PatientModel> getAllPatientsByAddress(String street, String city,
                                                       String country) {
         return patientRep.findAllByAddressStreetAndAddressCityAndAddressCountry(street, city, country);
@@ -39,8 +44,8 @@ public class PatientService {
 
     /**
      * Get a patient model by ID
-     * @param id the patient ID
-     * @return UserModel found with the patient ID
+     * @param id int of the patient ID
+     * @return PatientModel found with the patient ID
      */
     public PatientModel getPatientById(int id) {
         return patientRep.findById(id);
@@ -48,9 +53,9 @@ public class PatientService {
 
     /**
      * Check if the combination of given and family name and birthdate already exists
-     * @param givenName the given name of the patient
-     * @param familyName the family name of the patient
-     * @param birthdate the birthdate of the patient
+     * @param givenName string of the given name of the patient
+     * @param familyName string of the family name of the patient
+     * @param birthdate string of the birthdate of the patient
      * @return true if the combination already exists, false if the combination doesn't exist
      */
     public boolean checkGivenAndFamilyNamesAndBirthDateExist(String givenName, String familyName, LocalDate birthdate) {
@@ -59,7 +64,7 @@ public class PatientService {
 
     /**
      * Check if a patient Id already exists
-     * @param id the patient ID
+     * @param id int of the patient ID
      * @return true if patient ID already exists, false if patient ID doesn't exist
      */
     public boolean checkIdExists(int id) {
