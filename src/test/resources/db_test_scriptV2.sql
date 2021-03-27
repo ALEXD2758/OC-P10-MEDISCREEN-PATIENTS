@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS `mediscreen_test`.`patients` (
   `id` int NOT NULL AUTO_INCREMENT,
   `given_name` VARCHAR(125) NOT NULL,
   `family_name` VARCHAR(125) NOT NULL,
-  `birth_date` TIMESTAMP NOT NULL,
+  `birth_date` DATE NOT NULL,
   `gender` VARCHAR(25) NOT NULL,
   `email_address` VARCHAR(125),
   `phone_number` VARCHAR(125),
