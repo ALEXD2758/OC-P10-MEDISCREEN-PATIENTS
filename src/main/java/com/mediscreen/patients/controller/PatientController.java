@@ -1,6 +1,7 @@
 package com.mediscreen.patients.controller;
 
 import com.mediscreen.patients.model.PatientModel;
+import com.mediscreen.patients.model.PatientModelDTO;
 import com.mediscreen.patients.service.AddressService;
 import com.mediscreen.patients.service.PatientService;
 import org.slf4j.Logger;
@@ -32,9 +33,11 @@ public class PatientController {
      * @return a JSON string of patients
      */
     @GetMapping("/getPatientList")
-    public @ResponseBody List<PatientModel> patientList() {
+    public @ResponseBody List<PatientModelDTO> patientList() {
         logger.info("GET /getPatientList : OK");
-        return patientService.getAllPatients();
+        List<PatientModel> patientModList = patientService.getAllPatients();
+        List<PatientModelDTO> patientModelDTOList = patientService.patientModelToDtoList(patientModList);
+        return patientModelDTOList;
     }
 
     /**
@@ -44,9 +47,11 @@ public class PatientController {
      * @return a JSON string of a PatientModel
      */
     @GetMapping("/getPatient")
-    public @ResponseBody PatientModel getPatient(Integer patientId) {
+    public @ResponseBody PatientModelDTO getPatient(Integer patientId) {
         logger.info("GET /getPatient : OK");
-        return patientService.getPatientById(patientId);
+        PatientModel patient = patientService.getPatientById(patientId);
+        PatientModelDTO patientModelDTO = patientService.patientModelDTO(patient);
+        return patientModelDTO;
     }
 
     /**
